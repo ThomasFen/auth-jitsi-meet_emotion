@@ -62,11 +62,11 @@ app.use(auth(config));
 function sign(name, email, id, allowedRoom, isPhysician) {
   return jwtSign({
     context: {
-      user: {name, email, id, }
+      user: {name, email, id, isPhysician}
     },
     aud: JITSI,
     iss: JITSI,
-    isPhysician: isPhysician,
+    // isPhysician: isPhysician,
     sub: JITSI_SUBJECT,
     room: allowedRoom
   }, JITSI_SECRET);
