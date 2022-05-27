@@ -2,6 +2,7 @@
 import openid from 'express-openid-connect';
 import jwt from 'jsonwebtoken';
 import express from 'express';
+import dns from 'dns';
 // import 'dotenv/config';
 
 const {sign: jwtSign} = jwt;
@@ -13,12 +14,25 @@ const PORT = 3000;
 
 const {JITSI_SECRET, JITSI_PUB_URL, JITSI_SUBJECT} = process.env;
 
-console.log(process.env.TEST);
+
+async function lookupPromise(){
+  return new Promise((resolve, reject) => {
+      dns.lookup("host.docker.internal", (err, address, family) => {
+          if(err) reject(err);
+          resolve(address);
+      });
+ });
+};
+
+try{
+  const address = await lookupPromise();
+
+
 
 const config = {
-  baseURL: process.env.BASE_URL,
+  baseURL: "http://localhost:3000",
   clientID: process.env.CLIENT_ID,
-  issuerBaseURL: process.env.ISSUER_BASE_URL,
+  issuerBaseURL: `http://${address}:8080/realms/jitsi-emotion`,
   secret: process.env.SECRET,  
   // authorizationParams: {
 
@@ -91,3 +105,9 @@ app.get('/room/:room', (req, res) => {
 });
 
 app.listen(PORT, () => console.log(`Http Server is listening on port ${PORT}.`));
+
+}catch(err){
+  console.error(err);
+}
+
+
