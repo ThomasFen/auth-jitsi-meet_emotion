@@ -1,6 +1,6 @@
-FROM node:16-alpine
+FROM bitnami/node:13
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
 COPY package*.json ./
 
@@ -8,6 +8,10 @@ RUN npm ci --only=production
 
 COPY . .
 
-EXPOSE 3000
+RUN useradd -r -u 1001 -g root nonroot
+RUN chown -R nonroot /app
+USER nonroot
+
+ENV PORT="3000"
 
 CMD [ "node", "server.js" ]
